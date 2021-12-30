@@ -242,7 +242,7 @@ class CSOCP:
         print(self.problem.status)
         return sol
 
-class FlatPlanner:
+class BicyclePlanner:
     def __init__(self):
         self.asocp = ASOCP()
         self.bsocp = BSOCP()
@@ -258,7 +258,7 @@ class FlatPlanner:
 if __name__=="__main__":
     import matplotlib.pyplot as plt
     import time
-    fp = FlatPlanner()
+    fp = BicyclePlanner()
 
 
     # Time the solution
