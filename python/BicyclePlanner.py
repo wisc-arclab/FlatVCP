@@ -5,6 +5,9 @@ __email__ = "freiremelgiz@wisc.edu"
 
 """
 Trajectory Planner for the Bicycle Kinematic Model.
+Tested with solvers:
+    cp.MOSEK (recommended)
+    cp.ECOS
 
 If you use this code in your work, please cite:
 @article{freire2021flatness,
@@ -381,7 +384,6 @@ class BicyclePlanner:
         # Store chosen solver
         self.solver = solver
         # Parameters
-        self.Ts = 0.01 # Resolution for the trajectory
         self.data = FlatData() # FlatData initialize
         # Compile solvers
         self.psocp = PATH_SOCP()
@@ -402,10 +404,11 @@ class BicyclePlanner:
         err += self.ssocp._solve(data, self.solver, self.psocp, self.tsocp)
         return(err)
 
-    def full_traj(self):
+    # Retrieve state and input trajectory with desired Ts resolution
+    def full_traj(self, Ts=0.01):
         theta = self.psocp.theta
         s = self.ssocp.s
-        t = np.arange(0,self.tsocp.t_f,self.Ts)
+        t = np.arange(0,self.tsocp.t_f,Ts)
         x = np.zeros((4,len(t)))
         u = np.zeros((3,len(t)))
         s_v = s(t).flatten()
@@ -426,19 +429,27 @@ class BicyclePlanner:
         return x, u, t
 
 
-# Test the planner
+# Example use case for the class
 if __name__=="__main__":
+    # Timing and pltting tools
     import matplotlib.pyplot as plt
     import time
-    fp = BicyclePlanner(solver=cp.ECOS)
 
+    # Create the class and pass the desired solver
+    fp = BicyclePlanner(solver=cp.MOSEK)
+    # Create an instance of the problem data
     data = FlatData()
-    #data.x_f[0] = 20
-    #data.x_f[1] = 20000000000
-    data.x_0[2] = 0.2
-    data.x_f[2] = 5
-    #data.a_max = 0.1
-    #data.gamma_max = np.radians(30)
+    # Modify the problem data as needed
+    data.x_f[2] = 16
+
+    # Solve the problem
+    failed = fp.solve(data)
+    # Check if the problem solved correctly
+    if failed:
+        print("Error solving the problem!")
+    else:
+        # Retrieve the state and input trajectory
+        x, u, t = fp.full_traj()
 
     # Time the solution
     err = 0
@@ -450,11 +461,13 @@ if __name__=="__main__":
     if err:
         print("Infeasible!")
     else:
-        x, u, t = fp.full_traj()
+        # Obtain the state, input and time vectors with
+        # resolution of Ts (time step)
+        x, u, t = fp.full_traj(Ts=0.01)
 
-        # Plot
-        #plt.plot(t,u[0])
-        plt.plot(x[0],x[1])
+        # Plot results
+        #plt.plot(t,u[0]) # v_dot plot over time
+        plt.plot(x[0],x[1]) # x-y plot of trajectory
         plt.show()
 
 
