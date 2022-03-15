@@ -32,19 +32,60 @@ class BSpline:
         for r in range(1,d+1):
             self._curves.append(self._curves[0].derivative(r))
 
+    # This class is callable
     def __call__(self,t,r=0):
         return self._curves[r](t).T
 
+    # Update the control points
     def update_P(self, P):
         self._curves[0].c = np.array(P).T
         for r in range(1,len(self._curves)):
             self._curves[r] = self._curves[0].derivative(r)
 
+    # Update the knot vector
     def update_tau(self, tau):
         self._curves[0].t = np.array(tau)
         for r in range(1,len(self._curves)):
             self._curves[r] = self._curves[0].derivative(r)
 
+    # Returns the B-spline's r-th order control points
+    def get_VCP(self, r):
+        inner_VCPs = s._curves[r].c.T[:,0:s.N-r+1]
+        outer_VCPs = np.zeros((s.m,r))
+        return np.hstack((outer_VCPs, inner_VCPs, outer_VCPs))
+
+
+    # Return the B-spline's degree
+    @property
+    def d(self):
+        return s._curves[0].k
+
+    # Return the B-spline's N (number of ctrl points - 1)
+    @property
+    def N(self):
+        return s._curves[0].c.T.shape[1] - 1
+
+    # Return the B-spline's nu (number of knots - 1)
+    @property
+    def nu(self):
+        return len(s._curves[0].t) - 1
+
+    # Return the B-spline curve's dimension m
+    @property
+    def m(self):
+        return len(s._curves[0].c.T[:,0])
+
+    # Return the B-spline's knot vector
+    @property
+    def tau(self):
+        return s._curves[0].t
+
+    # Return the B-spline's control points
+    @property
+    def P(self):
+        return s._curves[0].c.T
+
+    # Compute clamped and uniform knot vectors
     @staticmethod
     def knots(tf,N,d):
         v = N+d+1
@@ -54,6 +95,7 @@ class BSpline:
         tau[N+2:] = tau[N+1];
         return tau
 
+    # Compute B_r
     @staticmethod
     def bmat(r,d,tau):
         assert(0<= r and r<=d),\
@@ -72,12 +114,14 @@ class BSpline:
                 np.zeros((N-r+1,r))))
         return M_d_dr@C_r
 
+    # Compute the r-th order VCP
     @staticmethod
     def vcp(r,P,j,d,tau):
         P_r = P@BSpline.bmat(r,d,tau)
         return np.reshape(P_r[:,j],(P.shape[0],1))\
             if np.isscalar(j) else P_r[:,j]
 
+    # Compute \Lambda(t)
     @staticmethod
     def lamvec(t,r,d,tau):
         assert(0<= r and r<=d),\
@@ -91,6 +135,7 @@ class BSpline:
         Lam[np.isnan(Lam)] = 0
         return Lam
 
+    # Compute s(t)
     @staticmethod
     def curve(t,P,r,d,tau):
         assert(0<= r and r<=d),\
@@ -102,51 +147,61 @@ class BSpline:
 
 
 
-# Test the planner
+# Test the BSpline class
 if __name__=="__main__":
     import time
+    # Parameters
     N = 20
     d = 4
+    m = 3
     tau = BSpline.knots(1,N,d)
-    #print(tau)
-    P = np.random.rand(3,N+1)
+    P = np.random.rand(m,N+1)
     s = BSpline(P,d,tau)
-    #P = (0,1,2)
-    #print(P)
-    #print(BSpline.lamvec((1,0.5,0),0,d,tau))
-    #print(BSpline.lamvec((0,0.5,1),2,d,tau))
-
     tvec = np.linspace(0,1,3)
 
-    # Time Curves Naive
-    t = time.time()
-    print(BSpline.curve(tvec,P,0,d,tau))
-    elapsed = time.time() - t
-    print("BSpline elapsed: ", elapsed)
 
-    # Time Curves SciSpline
+    # Timing tests
+    print("Timing tests:")
     t = time.time()
-    print(s(tvec,0))
+    s_naive = BSpline.curve(tvec,P,0,d,tau)
+    elapsed = time.time() - t
+    print("Naive elapsed: ", elapsed)
+    t = time.time()
+    s_sci = s(tvec,0)
     elapsed = time.time() - t
     print("SciSpline elapsed: ", elapsed)
-
-    # Update P
+    assert((s_naive == s_sci).all())
     P = np.random.rand(3,N+1)
     s.update_P(P)
-
-    # Time Curves Naive
     t = time.time()
-    print(BSpline.curve(tvec,P,1,d,tau))
+    s_naive = BSpline.curve(tvec,P,1,d,tau)
     elapsed = time.time() - t
-    print("BSpline elapsed: ", elapsed)
-
-    # Time Curves SciSpline
+    print("Naive elapsed: ", elapsed)
     t = time.time()
-    print(s(tvec,1))
+    s_sci = s(tvec,1)
     elapsed = time.time() - t
     print("SciSpline elapsed: ", elapsed)
+    assert((s_naive - s_sci <= 1e-6).all())
+
+    # Property tests
+    print("\nProperty tests:")
+    assert(s.d == d)
+    print("Test s.d: Pass")
+    assert((s.tau == tau).all())
+    print("Test s.tau: Pass")
+    assert((s.P == P).all())
+    print("Test s.P: Pass")
+    assert(s.N == N)
+    print("Test s.N: Pass")
+    assert(s.nu == len(tau)-1)
+    print("Test s.nu: Pass")
+    assert(s.m == m)
+    print("Test s.m: Pass")
 
     # VCP Test
-    #print(P)
-    #print(BSpline.vcp(0,P,0,d,tau))
-    #print(BSpline.vcp(0,P,(0,1,2,3,4,5),d,tau))
+    print("\nControl point tests:")
+    for r in range(d+1):
+        VCP_static = BSpline.vcp(r,P,list(range(N+1+r)),d,tau)
+        VCP_method = s.get_VCP(r)
+        assert((VCP_static - VCP_method <= 1e-6).all())
+        print("Test get_vcp({}): Pass".format(r))

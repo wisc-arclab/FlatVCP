@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
 
 __author__ = "Victor Freire"
 __email__ = "freiremelgiz@wisc.edu"
@@ -22,8 +22,7 @@ import numpy as np
 import cvxpy as cp
 from BSpline import BSpline
 
-#TODO
-np.set_printoptions(suppress=True)
+#np.set_printoptions(suppress=True)
 
 
 # Contains the parameters for the optimization problem
@@ -33,68 +32,78 @@ class FlatData:
         self.x_0 = np.array([0,0,15,0]).reshape([4,1])
         self.x_f = np.array([100,4,18,0]).reshape([4,1])
         self.v_max = 1000 # Max velocity
-        self.a_max = 1000 # Max acceleration
-        self.gamma_max = 80 # Max steering angle
+        self.a_max = 1000 # Max acceleration (0 to disable)
+        self.gamma_max = 0 # Max steering angle (0 to disable)
         self.nu = 1 # Time penalty (high nu -> high speed)
         self.L = 2.601 # Wheelbase length
 
-# Model A-SOCP
-class ASOCP:
+# Model PATH-SOCP
+class PATH_SOCP:
     def __init__(self):
         # B-Spline Setup
-        d = 4
-        N = 20
-        tau = BSpline.knots(1,N,d)
-        self.theta = BSpline(np.zeros((2,N+1)),d,tau)
+        d = 4 # B-spline degree
+        N = 20 # Number of control points
+        tau = BSpline.knots(1,N,d) # Knot vector
+        self.theta = BSpline(np.zeros((2,N+1)),d,tau) # B-spline curve
 
         # Optimization setup
-        obj_order = 3
-        int_res = 50
-        obj = 0
-        cst = []
+        obj_order = 3 # 3 -> min curvature, 1 -> min length
+        int_res = 50  # Integral approximation resolution
+        obj = 0 # General objective
+        obj_gamma = 0 # Added objective for gamma_max
+        cst = [] # General constraints
+        cst_gamma = [] # Constraints for gamma_max (conservative)
 
         # Parameters
-        self.r_0 = cp.Parameter((2,1))
-        self.r_f = cp.Parameter((2,1))
-        self.r_p_0 = cp.Parameter((2,1))
-        self.r_p_f = cp.Parameter((2,1))
-        self.d_hat = cp.Parameter((2,1))
-        self.alpha = cp.Parameter(nonneg=True)
-        self.gamma_tilde = cp.Parameter(nonneg=True)
+        self.r_0 = cp.Parameter((2,1))   # Initial position
+        self.r_f = cp.Parameter((2,1))   # Final position
+        self.r_p_0 = cp.Parameter((2,1)) # Initial pseudo vel unit vec
+        self.r_p_f = cp.Parameter((2,1)) # Final pseudo vel unit vec
+        self.d_hat = cp.Parameter((2,1)) # Heuristic for gamma_max
+        self.alpha = cp.Parameter(nonneg=True) # Heuristic for gamma_max
+        self.gamma_tilde = cp.Parameter(nonneg=True) # tan(gamma_max)/L
 
         # Variables
-        P = cp.Variable((2,N+1))
-        theta_ppp = cp.Variable((2,int_res))
-        ubv_th = cp.Variable(nonneg=True)
-        lbv_th = cp.Variable(nonneg=True)
-        uba_th = cp.Variable(nonneg=True)
-        beta = cp.Variable(nonneg=True)
+        P = cp.Variable((2,N+1)) # Control points
+        theta_obj = cp.Variable((2,int_res)) # theta^{(obj_order)}
+        ubv_th = cp.Variable(nonneg=True)    # \overline{v}_{\theta}
+        lbv_th = cp.Variable(nonneg=True)    # \underline{v}_{\theta}
+        uba_th = cp.Variable(nonneg=True)    # \overline{a}_{\theta}
+        beta = cp.Variable(nonneg=True)      # Ncvx relaxation for gamma_max
 
         ## Objective
-        obj += cp.sum_squares(theta_ppp.flatten())
-        obj += ubv_th
-        obj += uba_th
-        obj -= lbv_th
+        obj += cp.sum_squares(theta_obj.flatten())
+        obj += ubv_th # Minimize
+        obj += uba_th # Minimize
+        obj_gamma -= lbv_th # Maximize
 
         ## Constraints
+        # Approximate obj integral
         s = np.linspace(0,1,int_res)
-        cst.append(theta_ppp==BSpline.curve(s,P,obj_order,d,tau))
+        cst.append(theta_obj==BSpline.curve(s,P,obj_order,d,tau))
+        # Initial and final position
         cst.append(BSpline.curve(0,P,0,d,tau)==self.r_0)
         cst.append(BSpline.curve(1,P,0,d,tau)==self.r_f)
+        # Initial and final heading
         cst.append(BSpline.curve(0,P,1,d,tau)==ubv_th*self.r_p_0)
         cst.append(BSpline.curve(1,P,1,d,tau)==ubv_th*self.r_p_f)
+        # \|\theta'(s)\|<= \overline{v}_{\theta}
         cst.append(cp.SOC(ubv_th*np.ones(N),
                 BSpline.vcp(1,P,list(range(1,N+1)),d,tau)))
-        cst.append(self.d_hat.T@BSpline.vcp(1,P,
+        # gamma(s) <= gamma_max
+        cst_gamma.append(self.d_hat.T@BSpline.vcp(1,P,
                 list(range(1,N+1)),d,tau) >= lbv_th)
-        cst.append(cp.SOC(uba_th*np.ones(N-1),
+        cst_gamma.append(cp.SOC(uba_th*np.ones(N-1),
                 BSpline.vcp(2,P,list(range(2,N+1)),d,tau)))
-        cst.append(cp.SOC(4*self.gamma_tilde*beta + 1,
+        cst_gamma.append(cp.SOC(4*self.gamma_tilde*beta + 1,
                 cp.vstack((2*self.alpha, 4*self.gamma_tilde*beta-1))))
-        cst.append(uba_th <= self.alpha*lbv_th - beta)
+        cst_gamma.append(uba_th <= self.alpha*lbv_th - beta)
 
-        ## Problem
-        self.problem = cp.Problem(cp.Minimize(obj),cst)
+        ## Problems
+        self.problem_ucst = cp.Problem(cp.Minimize(obj),cst)
+        assert(self.problem_ucst.is_dcp(dpp=True))
+        self.problem = cp.Problem(cp.Minimize(obj + obj_gamma),
+                cst + cst_gamma)
         assert(self.problem.is_dcp(dpp=True))
 
         ## Save Variables
@@ -104,19 +113,24 @@ class ASOCP:
         self.uba_th = uba_th
 
     # Solve the problem
-    def _solve(self, data, solver=cp.MOSEK):
+    def _solve(self, data, solver):
+        # Populate general parameters
         self.r_0.value = data.x_0[0:2]
         self.r_f.value = data.x_f[0:2]
         self.r_p_0.value = np.array([np.cos(data.x_0[3]),\
                 np.sin(data.x_0[3])]).reshape((2,1))
         self.r_p_f.value = np.array([np.cos(data.x_f[3]),\
                 np.sin(data.x_f[3])]).reshape((2,1))
-        delta = data.x_f[0:2]-data.x_0[0:2]
-        self.d_hat.value = delta/np.linalg.norm(delta)
-        self.gamma_tilde.value = np.tan(data.gamma_max)/data.L
-        self.alpha.value = 2*np.tan(data.gamma_max)\
-                /data.L*np.linalg.norm(delta)
-        sol = self.problem.solve(solver=solver)
+        # Check if gamma_max is required
+        if data.gamma_max:
+            delta = data.x_f[0:2]-data.x_0[0:2]
+            self.d_hat.value = delta/np.linalg.norm(delta)
+            self.gamma_tilde.value = np.tan(data.gamma_max)/data.L
+            self.alpha.value = 2*np.tan(data.gamma_max)\
+                    /data.L*np.linalg.norm(delta)
+            sol = self.problem.solve(solver=solver)
+        else:
+            sol = self.problem_ucst.solve(solver=solver)
         if self.problem.status == cp.OPTIMAL:
             self.theta.update_P(self.P.value)
         return sol
@@ -196,14 +210,15 @@ class BSOCP:
         return t[-1]
 
     # Solve the problem
-    def _solve(self, data, asocp, solver=cp.MOSEK):
+    def _solve(self, data, psocp, solver=cp.MOSEK):
         self.v_0_sq.value = data.x_0[2][0]**2
         self.v_f_sq.value = data.x_f[2][0]**2
         self.v_max_sq.value = data.v_max**2
         self.a_max.value = data.a_max
         self.nu.value = data.nu
-        self.theta_p.value = asocp.theta(self.s,1)
-        self.theta_pp.value = asocp.theta(self.s,2)
+        self.theta_p.value = psocp.theta(self.s,1)
+        print(psocp.theta.c)
+        self.theta_pp.value = psocp.theta(self.s,2)
         self.theta_p_n.value = np.linalg.norm(self.theta_p.value,\
                 axis=0).reshape(self.theta_p_n.shape)
         self.theta_p_n_sq.value = np.square(self.theta_p_n.value)
@@ -296,7 +311,7 @@ class CSOCP:
         self.P = P
 
     # Solve the problem
-    def _solve(self, data, asocp, bsocp, solver=cp.MOSEK):
+    def _solve(self, data, psocp, bsocp, solver=cp.MOSEK):
         t_f = bsocp.t_f
         t = np.linspace(0,t_f,self.I)
         tau = BSpline.knots(t_f,self.N,self.d)
@@ -311,8 +326,8 @@ class CSOCP:
         self.v_f.value = data.x_f[2][0]
         self.v_max.value = data.v_max
         self.a_max.value = data.a_max
-        self.ubv_th.value = asocp.ubv_th.value
-        self.uba_th_root.value = np.sqrt(asocp.uba_th.value)
+        self.ubv_th.value = psocp.ubv_th.value
+        self.uba_th_root.value = np.sqrt(psocp.uba_th.value)
         sol = self.problem.solve(solver=solver)
         if self.problem.status == cp.OPTIMAL:
             self.s.update_P(self.P.value)
@@ -320,23 +335,26 @@ class CSOCP:
         return sol
 
 class BicyclePlanner:
-    def __init__(self):
+    def __init__(self, solver=cp.MOSEK):
+        # Store chosen solver
+        self.solver = solver
         # Parameters
         self.Ts = 0.01 # Resolution for the trajectory
         self.data = FlatData()
         # Compile solvers
-        self.asocp = ASOCP()
+        self.psocp = PATH_SOCP()
         self.bsocp = BSOCP()
         self.csocp = CSOCP()
 
     def solve(self, data=FlatData()):
-        self.asocp._solve(data)
-        self.bsocp._solve(data, self.asocp)
-        self.csocp._solve(data, self.asocp, self.bsocp)
+        self.psocp._solve(data, self.solver)
+        print(self.psocp)
+        self.bsocp._solve(data, self.psocp)
+        self.csocp._solve(data, self.psocp, self.bsocp)
         self.data = data
 
     def full_traj(self):
-        theta = self.asocp.theta
+        theta = self.psocp.theta
         s = self.csocp.s
         t = np.arange(0,self.bsocp.t_f,self.Ts)
         x = np.zeros((4,len(t)))
@@ -384,8 +402,9 @@ if __name__=="__main__":
 
     # Plot
     #t = np.linspace(0,1,50)
-    #theta = fp.asocp.theta(t)
+    #theta = fp.psocp.theta(t)
     #plt.plot(t,np.degrees(u[0]))
-    plt.plot(t,u[0])
+    plt.plot(x[0],x[1])
+    #plt.plot(t,u[0])
     plt.show()
 
