@@ -50,7 +50,7 @@ class BSpline:
 
     # Returns the B-spline's r-th order control points
     def get_VCP(self, r):
-        inner_VCPs = s._curves[r].c.T[:,0:s.N-r+1]
+        inner_VCPs = self._curves[r].c.T[:,0:s.N-r+1]
         outer_VCPs = np.zeros((s.m,r))
         return np.hstack((outer_VCPs, inner_VCPs, outer_VCPs))
 
@@ -58,32 +58,32 @@ class BSpline:
     # Return the B-spline's degree
     @property
     def d(self):
-        return s._curves[0].k
+        return self._curves[0].k
 
     # Return the B-spline's N (number of ctrl points - 1)
     @property
     def N(self):
-        return s._curves[0].c.T.shape[1] - 1
+        return self._curves[0].c.T.shape[1] - 1
 
     # Return the B-spline's nu (number of knots - 1)
     @property
     def nu(self):
-        return len(s._curves[0].t) - 1
+        return len(self._curves[0].t) - 1
 
     # Return the B-spline curve's dimension m
     @property
     def m(self):
-        return len(s._curves[0].c.T[:,0])
+        return len(self._curves[0].c.T[:,0])
 
     # Return the B-spline's knot vector
     @property
     def tau(self):
-        return s._curves[0].t
+        return self._curves[0].t
 
     # Return the B-spline's control points
     @property
     def P(self):
-        return s._curves[0].c.T
+        return self._curves[0].c.T
 
     # Compute clamped and uniform knot vectors
     @staticmethod
