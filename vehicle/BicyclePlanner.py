@@ -23,7 +23,7 @@ Copyright 2021 Victor Freire
 
 import numpy as np
 import cvxpy as cp
-from BSpline import BSpline
+from FlatVCP.splines.BSpline import BSpline
 
 #np.set_printoptions(suppress=True)
 
@@ -376,7 +376,7 @@ class SPEED_SOCP:
 
 # FlatVCP Main Class
 class BicyclePlanner:
-    def __init__(self, solver=cp.ECOS):
+    def __init__(self, solver=cp.MOSEK):
         # Store chosen solver
         self.solver = solver
         # Parameters
