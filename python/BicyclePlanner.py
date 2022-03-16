@@ -281,10 +281,6 @@ class SPEED_SOCP:
         self.a_max = cp.Parameter(nonneg=True)
         self.ubv_th = cp.Parameter(nonneg=True)
         self.uba_th_root = cp.Parameter(nonneg=True)
-        #TODO 
-        #self.BLam = cp.Parameter((N+1,int_res),sparsity=True)
-        #self.B_1 = cp.Parameter((N+1,N+2),sparsity=True)
-        #self.B_2 = cp.Parameter((N+1,N+3),sparsity=True)
         self.BLam = cp.Parameter((N+1,int_res))
         self.B_1 = cp.Parameter((N+1,N+2))
         self.B_2 = cp.Parameter((N+1,N+3))
