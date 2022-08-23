@@ -13,11 +13,11 @@ function data = vcp_bk_data()
 %
 %   Copyright 2021 Victor Freire. 
 
-data.x_0 = [0;0;10;0]; % Initial state
-data.x_f = [100;3.7;12;0]; % Final state
-data.v_max = 1000; % Max velocity
+data.x_0 = [0;0;15;0]; % Initial state
+data.x_f = [100;4;18;0]; % Final state
+data.v_max = 0; % Max velocity
 data.a_max = 0; % Max acceleration (0 to disable)
 data.gamma_max = 0; % Max steering angle (0 to disable)
 data.nu = 1; % Weight factor for t_f (high nu -> fast traj)
-data.L = 2.601; % Wheelbase length
+data.L = 2.6746; % Wheelbase length
 

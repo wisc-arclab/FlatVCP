@@ -102,8 +102,9 @@ for j = 1:vcp.N
 end
 
 % v_max
+cst_v = [];
 for j = 1:vcp.N
-    cst = [cst, ubv_th*P_1(j+1) <= v_max];
+    cst_v = [cst_v, ubv_th*P_1(j+1) <= v_max];
 end
 
 
@@ -127,12 +128,22 @@ end
 
 
 %% Options
-opt = sdpsettings('verbose',0,'solver','mosek','debug',0);
+ops = sdpsettings('verbose',0,'solver','mosek','debug',0);
 
 %% Setup Optimizers
-vcp.opt_ucst = optimizer(cst,obj,opt,{x_0,x_f,v_max,a_max,ubv_th,uba_th,uba_th_root,BLam,B_1,B_2},{P,kappa_bar,epsilon_bar});
-vcp.opt = optimizer([cst, cst_a],obj,opt,{x_0,x_f,v_max,a_max,ubv_th,uba_th,uba_th_root,BLam,B_1,B_2},{P,kappa_bar,epsilon_bar});
+par = {x_0,x_f,v_max,a_max,ubv_th,uba_th,uba_th_root,BLam,B_1,B_2};
+out = {P,kappa_bar,epsilon_bar};
 
-
+% VA encoding
+% V = cst_v
+% A = cst_a
+% -- : 0
+vcp.opts{1} = optimizer(cst,obj,ops,par,out);
+% -A : 1
+vcp.opts{2} = optimizer([cst, cst_a],obj,ops,par,out);
+% V- : 2
+vcp.opts{3} = optimizer([cst, cst_v],obj,ops,par,out);
+% VA : 3
+vcp.opts{4} = optimizer([cst, cst_a, cst_v],obj,ops,par,out);
 
 

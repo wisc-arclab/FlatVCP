@@ -1,6 +1,6 @@
-function [x, u, t] = vcp_bk_recover(sol, Ts)
-%VCP_BK_RECOVER  Produce state x and input u trajectories from FlatVCP sol.
-%   [x, u, t] = VCP_BK_RECOVER(sol,Ts) returns x, u state and input
+function [x, u, t] = vcp_bk_inflate(sol, Ts)
+%VCP_BK_INFLATE  Produce state x and input u trajectories from FlatVCP sol.
+%   [x, u, t] = VCP_BK_INFLATE(sol,Ts) returns x, u state and input
 %                   trajectories with a sample time of Ts. The state
 %                   trajectory x is [4, N] and the input trajectory u is
 %                   [3, N]. The number N is determined as floor(t_f/Ts).
@@ -12,7 +12,7 @@ function [x, u, t] = vcp_bk_recover(sol, Ts)
 %   Copyright 2022 Victor Freire. 
 
 %% Matrices to return
-N = floor(sol.t_f/Ts);
+N = max(1,floor(sol.t_f/Ts));
 t = linspace(0,sol.t_f,N);
 x = zeros(4,N);
 u = zeros(3,N);

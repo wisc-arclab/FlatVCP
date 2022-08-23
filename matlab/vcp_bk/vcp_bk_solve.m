@@ -18,6 +18,22 @@ sol = [];
 err = [0 0 0];
 sol.L = data.L; % Store the wheelbase length
 
+%% Check data
+if norm(data.x_0(1:2)-data.x_f(1:2))<=eps
+    err = [1 1 1];
+    return
+end
+
+if data.gamma_max >= deg2rad(90)
+  error("Unsupported gamma_max")
+end
+
+%% Get VA encoding
+V_act = logical(data.v_max);
+A_act = logical(data.a_max);
+sol.code = num2str([V_act, A_act]);
+cst_code = bin2dec(sol.code)+1;
+
 %% A-SOCP: Safe B-spline Path
 x0xf = norm(data.x_0(1:2)-data.x_f(1:2));
 alpha = 2*tan(data.gamma_max)/data.L*x0xf;
@@ -29,9 +45,9 @@ else
             x0xf,data.gamma_max,alpha,data.L);
 end
 % Check A-SOCP solved correctly
-if errorcode
-    err(1) = errorcode;
-    return
+err(1) = errorcode;
+if errorcode ~= 0 && errorcode ~= 4 && errorcode ~= -1
+    return % Exit if not feasible
 end
 % Process the solution of A-SOCP
 [sol.theta.P, ubv_th, uba_th] =  sol_a{:};
@@ -44,27 +60,27 @@ if debug
 end
 
 %% B-SOCP: Optimal t_f
+% Parameters
 s_line = linspace(0,1,socp.b.N+1);
 theta_p = bspline_curve(s_line,sol.theta.P,1,socp.a.d,socp.a.tau);
 theta_pp = bspline_curve(s_line,sol.theta.P,2,socp.a.d,socp.a.tau);
 theta_p_n = vecnorm(theta_p);
 dot_norm = dot(theta_p,theta_pp)./theta_p_n;
-if data.a_max
-    [sol_b,errorcode] = socp.b.opt(data.x_0,data.x_f,data.v_max,data.a_max,...
-        data.nu,theta_p,theta_pp,theta_p_n,dot_norm);
-else
-    [sol_b,errorcode] = socp.b.opt_ucst(data.x_0,data.x_f,data.v_max,data.a_max,...
-        data.nu,theta_p,theta_pp,theta_p_n,dot_norm);
-end
-if errorcode
-    err(2) = errorcode;
-    return
+
+% Use appropriate optimizer
+[sol_b,errorcode] = socp.b.opts{cst_code}(data.x_0, data.x_f, ...
+        data.v_max, data.a_max, data.nu, ...
+        theta_p, theta_pp, theta_p_n, dot_norm);
+err(2) = errorcode;
+if errorcode ~= 0 && errorcode ~= 4 && errorcode ~= -1
+    return % Exit if not feasible
 end
 % Process the solution of B-SOCP
 [a,b] =  sol_b{:};
 sol.t_f = socp.b.tf(a,b);
 
 %% C-SOCP: Safe B-spline Speed Profile
+% Parameters
 tau = bspline_knots(sol.t_f,socp.c.N,socp.c.d);
 t = linspace(0,sol.t_f,socp.c.I);
 Lam_obj = bspline_lamvec(t,socp.c.r,socp.c.d,tau);
@@ -72,18 +88,18 @@ B_r = bspline_bmat(socp.c.r,socp.c.d,tau);
 BLam = B_r*Lam_obj;
 B_1 = bspline_bmat(1,socp.c.d,tau);
 B_2 = bspline_bmat(2,socp.c.d,tau);
-if data.a_max
-    [sol_c,errorcode] = socp.c.opt(data.x_0,data.x_f,data.v_max,data.a_max,...
-                   ubv_th,uba_th,sqrt(uba_th),BLam,B_1,B_2);
-else
-    [sol_c,errorcode] = socp.c.opt_ucst(data.x_0,data.x_f,data.v_max,data.a_max,...
-                   ubv_th,uba_th,sqrt(uba_th),BLam,B_1,B_2);
-end
+
+% Use appropriate optimizer
+[sol_c, errorcode] = socp.c.opts{cst_code}(data.x_0, data.x_f, ...
+        data.v_max, data.a_max, ubv_th, ...
+        uba_th, sqrt(uba_th), BLam, B_1, B_2);
+
+% Store solution
 [sol.s.P, kappa_bar, epsilon_bar] =  sol_c{:};
 
-if errorcode
-    err(3) = errorcode;
-    return
+err(3) = errorcode;
+if errorcode ~= 0 && errorcode ~= 4 && errorcode ~= -1
+    return % Exit if not feasible
 end
 
 % Process the solution of C-SOCP

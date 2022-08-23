@@ -25,7 +25,7 @@ function vcp = vcp_bk_asocp()
 %   - ubv_th [1,1] upper bound on \|\theta'(s)\|_2
 %   - uba_th [1,1] upper bound on \|\theta''(s)\|_2
 %
-%   Copyright 2021 Victor Freire. 
+%   Copyright 2021 Victor Freire.
 
 %% Setup Problem
 % Setup B-spline
@@ -54,13 +54,15 @@ beta = sdpvar(1);
 
 % Init problem
 obj = 0;
+obj_gamma = 0;
 cst = [];
+cst_gamma = [];
 
 %% Objective
 % Norm upper bounds
 obj = obj + ubv_th;
 obj = obj + uba_th;
-obj = obj - lbv_th;
+obj_gamma = obj_gamma - lbv_th;
 % Smoothness
 t_sig_obj =  linspace(vcp.tau(1),vcp.tau(end),int_res)'; % approx integral
 costvar_sig = sdpvar(2,length(t_sig_obj)); % i.e. pseudo acc of \sigma(s)
@@ -85,12 +87,7 @@ for j = r:vcp.N
   cst = [cst, cone(bspline_vcp(r,P,j,vcp.d,vcp.tau),ubv_th)];
 end
 
-% \|\theta'\|_2 >= lbv_th
-cst = [cst, lbv_th >= 0];
-for j = 1:vcp.N
-    d_hat = (x_f(1:2)-x_0(1:2))/distance;
-    cst = [cst, d_hat'*bspline_vcp(1,P,j,vcp.d,vcp.tau) >= lbv_th];
-end
+
 
 % \|\theta''\|_2 <= uba_th
 r = 2;
@@ -99,7 +96,13 @@ for j = r:vcp.N
 end
 
 % |\gamma| <= gamma_max
-cst_gamma = [];
+% \|\theta'\|_2 >= lbv_th
+cst_gamma = [cst_gamma, lbv_th >= 0];
+for j = 1:vcp.N
+    d_hat = (x_f(1:2)-x_0(1:2))/distance;
+    cst_gamma = [cst_gamma, d_hat'*bspline_vcp(1,P,j,vcp.d,vcp.tau) >= lbv_th];
+end
+% Quadratic lower bount
 cst_gamma = [cst_gamma, beta >=0];
 gamma_tilde = tan(gamma_max)/L;
 cst_gamma = [cst_gamma, cone([2*alpha; 4*gamma_tilde*beta-1],... 
@@ -114,4 +117,4 @@ opt = sdpsettings('verbose',0,'solver','mosek','debug',0);
 % Unconstraned gamma max
 vcp.opt_ucst = optimizer(cst,obj,opt,{x_0,x_f,distance,gamma_max,alpha,L},{P, ubv_th, uba_th});
 % Constrained gamma max
-vcp.opt = optimizer([cst, cst_gamma],obj,opt,{x_0,x_f,distance,gamma_max,alpha,L},{P, ubv_th, uba_th});
+vcp.opt = optimizer([cst, cst_gamma],obj+obj_gamma,opt,{x_0,x_f,distance,gamma_max,alpha,L},{P, ubv_th, uba_th});

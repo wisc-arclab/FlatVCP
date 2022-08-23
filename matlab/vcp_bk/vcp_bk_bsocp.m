@@ -5,8 +5,7 @@ function vcp = vcp_bk_bsocp()
 %
 %   The struct has fields:
 %   - N [1,1] Number of discretization steps
-%   - opt [] optimizer object
-%   - opt_ucst [] optimizer object (no a_max cst)
+%   - opts [] optimizer objects
 %   - tf [@] function that takes solution of opt and returns t_f
 %
 %   The optimizer object is [vcp.opt] and it has:
@@ -92,9 +91,11 @@ cst = [cst, theta_p_n(1)^2*b(1) == x_0(3)^2];
 cst = [cst, theta_p_n(end)^2*b(end) == x_f(3)^2];
 
 % Max vel cst
+cst_v = [];
 for i = 0:vcp.N
-    cst = [cst, theta_p_n(i+1)^2*b(i+1) <= v_max^2];
+    cst_v = [cst_v, theta_p_n(i+1)^2*b(i+1) <= v_max^2];
 end
+
 % Max acc cst
 cst_a = [];
 for i = 0:vcp.N
@@ -104,11 +105,23 @@ end
 
 
 %% Options
-opt = sdpsettings('verbose',0,'solver','mosek','debug',0);
+ops = sdpsettings('verbose',0,'solver','mosek','debug',0);
 
-%% Setup Optimizer
-vcp.opt_ucst = optimizer(cst,obj,opt,{x_0,x_f,v_max,a_max,nu,theta_p,theta_pp,theta_p_n,dot_norm},{a,b,acc_norm,acc_sq});
-vcp.opt = optimizer([cst, cst_a],obj,opt,{x_0,x_f,v_max,a_max,nu,theta_p,theta_pp,theta_p_n,dot_norm},{a,b,acc_norm,acc_sq});
+%% Setup Optimizers
+par = {x_0,x_f,v_max,a_max,nu,theta_p,theta_pp,theta_p_n,dot_norm};
+out = {a,b,acc_norm,acc_sq};
+
+% VA encoding
+% V = cst_v
+% A = cst_a
+% -- : 0
+vcp.opts{1} = optimizer(cst,obj,ops,par,out);
+% -A : 1
+vcp.opts{2} = optimizer([cst, cst_a],obj,ops,par,out);
+% V- : 2
+vcp.opts{3} = optimizer([cst, cst_v],obj,ops,par,out);
+% VA : 3
+vcp.opts{4} = optimizer([cst, cst_a, cst_v],obj,ops,par,out);
 
 %% Wrapper to compute t_f
 vcp.tf = @get_tf;

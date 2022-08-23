@@ -3,7 +3,7 @@ authors:
     given-names: Victor
 cff-version: 1.2.0
 message: "If you use this software, please cite it using these metadata."
-title: "FlatVCP"
+title: "FlatVCP software"
 
 preferred-citation:
   type: article
@@ -12,7 +12,7 @@ preferred-citation:
     given-names: "Victor"
   - family-names: "Xu"
     given-names: "Xiangru"
-  journal: "arXiv preprint arXiv:2111.00951"
-  title: "Flatness-based Quadcopter Trajectory Planning and Tracking with Continuous-time Safety Guarantees"
-  year: 2021
+  journal: "arXiv preprint arXiv:2204.08980"
+  title: "Optimal Control for Kinematic Bicycle Model with Continuous-time Safety Guarantees: A Sequential Second-order Cone Programming Approach"
+  year: 2022
 
