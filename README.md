@@ -33,9 +33,10 @@ python3 examples/fig_s.py
 The output should be a trajectory file `traj_figS.csv` with the generated state-space
 trajectory and the following plot of the x-y trajectory.
 
-<img
-src="https://github.com/ARC-Lab-Research-Group/FlatVCP/img/bk_python_example.png"
-width="600" alt="Bicycle Python Example">
+[<img
+src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_python_example.png"
+width="600" alt="Bicycle Python
+Example">](https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_python_example.png)
 
 Note that this example uses [matplotlib](https://matplotlib.org/) for visualization.
 
