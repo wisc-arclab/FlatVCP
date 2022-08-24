@@ -33,10 +33,12 @@ python3 examples/fig_s.py
 The output should be a trajectory file `traj_figS.csv` with the generated state-space
 trajectory and the following plot of the x-y trajectory.
 
-[<img
-src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_python_example.png"
-width="400" alt="Bicycle Python
-Example">](https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_python_example.png)
+<p align="center">
+  [<img
+  src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_python_example.png"
+  width="400" alt="Bicycle Python
+  Example">](https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_python_example.png)
+</p>
 
 Note that this example uses [matplotlib](https://matplotlib.org/) for visualization.
 
@@ -72,18 +74,17 @@ sourced to avoid re-compiling the SOCPs at each solve time.
 For a quick-start, inspect the file `matlab/vcp_bk/vcp_bk_example.m` and run it.
 The output should be the following plots.
 
-
+<p float="left">
 [<img
 src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_path.png"
 width="200" alt="Bicycle MATLAB
 Example Path">](https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_path.png)
-
 [<img
 src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_state.png"
 width="200" alt="Bicycle MATLAB
 Example State">](https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_state.png)
-
 [<img
 src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_input.png"
 width="200" alt="Bicycle MATLAB
 Example Input">](https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_input.png)
+</p>
