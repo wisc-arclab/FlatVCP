@@ -14,7 +14,7 @@ Sequential Second-order Cone Programming Approach},
 ```
 
 ## Python3
-### Dependencies
+### Dependencies & Installation
 The repository is structured as a Python3 package. Thus, you can run the following command to
 install the dependencies.
 ```
@@ -35,14 +35,14 @@ trajectory and the following plot of the x-y trajectory.
 
 [<img
 src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_python_example.png"
-width="600" alt="Bicycle Python
+width="400" alt="Bicycle Python
 Example">](https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_python_example.png)
 
 Note that this example uses [matplotlib](https://matplotlib.org/) for visualization.
 
 
 ## MATLAB
-### Dependencies
+### Dependencies & Installation
 The MATLAB implementation requires a working installation of
 [YALMIP](https://yalmip.github.io/) and we recommend using [MOSEK](https://www.mosek.com/).
 noting that you will need a license (free academic license available). However, any
@@ -57,5 +57,33 @@ You might also find the following MATHWORKS toolboxes useful/necessary:
 * Symbolic Math Toolbox
 * Control Systems Toolbox
 
-### Example
+The package is lightweight and there is no installation beyond adding the following folders to
+your path:
+```
+addpath(userpath+"\FlatVCP\matlab\bspline")
+addpath(userpath+"\FlatVCP\matlab\vcp_bk")
+```
+Then, you need to compile the SOCPs into YALMIP
+[optimizer](https://yalmip.github.io/command/optimizer/) objects by running
+`matlab/vcp_bk/vcp_bk_compile.m`. This will generate `vcp_bk_compiled.mat` which will later be
+sourced to avoid re-compiling the SOCPs at each solve time.
 
+### Example
+For a quick-start, inspect the file `matlab/vcp_bk/vcp_bk_example.m` and run it.
+The output should be the following plots.
+
+
+[<img
+src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_path.png"
+width="200" alt="Bicycle MATLAB
+Example Path">](https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_path.png)
+
+[<img
+src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_state.png"
+width="200" alt="Bicycle MATLAB
+Example State">](https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_state.png)
+
+[<img
+src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_input.png"
+width="200" alt="Bicycle MATLAB
+Example Input">](https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_input.png)
