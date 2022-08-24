@@ -72,7 +72,7 @@ sourced to avoid re-compiling the SOCPs at each solve time.
 
 ### Example
 For a quick-start, inspect the file `matlab/vcp_bk/vcp_bk_example.m` and run it.
-The output should be the following plots.
+You should see the following plots.
 
 <p align="center">
   <img src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_path.png" width="500" alt="Bicycle MATLAB Example Path">
