@@ -46,4 +46,7 @@ np.savetxt('traj_figS.csv', T.T, delimiter=',')
 
 # Plot x-y trajectory
 plt.plot(x[0], x[1])
+plt.xlabel("x [m]")
+plt.ylabel("y [m]")
+plt.grid(visible=True)
 plt.show()
