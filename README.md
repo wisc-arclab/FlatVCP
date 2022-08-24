@@ -34,11 +34,13 @@ The output should be a trajectory file `traj_figS.csv` with the generated state-
 trajectory and the following plot of the x-y trajectory.
 
 <p align="center">
-  [<img
+  <img
   src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_python_example.png"
   width="400" alt="Bicycle Python
-  Example">](https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_python_example.png)
+  Example">
 </p>
+<!--(https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_python_example.png)
+-->
 
 Note that this example uses [matplotlib](https://matplotlib.org/) for visualization.
 
