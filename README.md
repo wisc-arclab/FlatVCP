@@ -77,7 +77,7 @@ The output should be the following plots.
 <p align="center">
   <img src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_path.png" width="500" alt="Bicycle MATLAB Example Path">
 </p>
-<p float="left">
-  <img src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_state.png" width="250" alt="Bicycle MATLAB Example State">
-  <img src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_input.png" width="250" alt="Bicycle MATLAB Example Input">
+<p float="center">
+  <img src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_state.png" width="400" alt="Bicycle MATLAB Example State">
+  <img src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_input.png" width="400" alt="Bicycle MATLAB Example Input">
 </p>
