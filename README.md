@@ -7,7 +7,8 @@ If you use this code, we would appreciate it if you cited as follows:
 @ARTICLE{freire2022optimal,
   author={Freire, Victor and Xu, Xiangru},
   journal={IEEE Robotics and Automation Letters},
-  title={Optimal Control for Kinematic Bicycle Model With Continuous-Time Safety Guarantees: A Sequential Second-Order Cone Programming Approach},
+  title={Optimal Control for Kinematic Bicycle Model With Continuous-Time Safety Guarantees: A
+Sequential Second-Order Cone Programming Approach},
   year={2022},
   volume={},
   number={},
