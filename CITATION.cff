@@ -12,7 +12,6 @@ preferred-citation:
     given-names: "Victor"
   - family-names: "Xu"
     given-names: "Xiangru"
-  journal: "arXiv preprint arXiv:2204.08980"
+  journal: "IEEE Robotics and Automation Letters"
   title: "Optimal Control for Kinematic Bicycle Model with Continuous-time Safety Guarantees: A Sequential Second-order Cone Programming Approach"
   year: 2022
-

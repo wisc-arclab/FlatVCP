@@ -4,12 +4,15 @@ The repository contains both Python3 and MATLAB code.
 
 If you use this code, we would appreciate it if you cited as follows:
 ```
-@article{freire2022optimal,
-  title={Optimal Control for Kinematic Bicycle Model with Continuous-time Safety Guarantees: A
-Sequential Second-order Cone Programming Approach},
+@ARTICLE{freire2022optimal,
   author={Freire, Victor and Xu, Xiangru},
-  journal={arXiv preprint arXiv:2204.08980},
-  year={2022}
+  journal={IEEE Robotics and Automation Letters},
+  title={Optimal Control for Kinematic Bicycle Model With Continuous-Time Safety Guarantees: A Sequential Second-Order Cone Programming Approach},
+  year={2022},
+  volume={},
+  number={},
+  pages={1-8},
+  doi={10.1109/LRA.2022.3204903}
 }
 ```
 
