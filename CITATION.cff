@@ -15,3 +15,7 @@ preferred-citation:
   journal: "IEEE Robotics and Automation Letters"
   title: "Optimal Control for Kinematic Bicycle Model with Continuous-time Safety Guarantees: A Sequential Second-order Cone Programming Approach"
   year: 2022
+  doi: 10.1109/LRA.2022.3204903
+  volume: 7
+  number: 4
+  pages: 11681-11688

@@ -10,9 +10,9 @@ If you use this code, we would appreciate it if you cited as follows:
   title={Optimal Control for Kinematic Bicycle Model With Continuous-Time Safety Guarantees: A
 Sequential Second-Order Cone Programming Approach},
   year={2022},
-  volume={},
-  number={},
-  pages={1-8},
+  volume={7},
+  number={4},
+  pages={11681-11688},
   doi={10.1109/LRA.2022.3204903}
 }
 ```
