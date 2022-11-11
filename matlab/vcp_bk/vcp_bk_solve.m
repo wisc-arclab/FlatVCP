@@ -1,15 +1,14 @@
 function [sol, err] = vcp_bk_solve(socp,data)
 %VCP_BK_SOLVE  Solve the Kinematic Bicycle Model Optimal Control Problem.
 %   [sol,err] = VCP_BK_SOLVE(socp,data) returns t_f, the parameters of the
-%                   safe B-spline path and safe B-spline speed profile. 
+%                   safe B-spline path and safe B-spline speed profile.
 %                   Infeasibility is described in err code as per YALMIP.
 %                   The inputs are the compiled SOCP problems in the socp
 %                   struct, and the problem data structure.
 %
 %   see vcp_bk_data() and vcp_bk_compile()
 %
-%
-%   Copyright 2022 Victor Freire. 
+%   Copyright (c) 2022 University of Wisconsin-Madison
 
 %% Options
 debug = false; % Switch to true to return extra data in sol struct

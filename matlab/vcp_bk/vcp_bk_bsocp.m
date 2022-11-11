@@ -19,13 +19,13 @@ function vcp = vcp_bk_bsocp()
 %   - theta_pp [2,N+1] \theta''(s) evaluated at s_i, i=0,...,N
 %   - theta_p_n [1,N+1] \|\theta'(s)\|_2 evaluated at s_i, i=0,...,N
 %   - dot_norm [1,N+1] (\theta' \cdot \theta'')/\|\theta'\|_2 at s_i
-%   
+%
 %
 %   Outputs:
 %   - a [N+1,1] a = s_ddot
 %   - b [N+1,1] b = s_dot^2
 %
-%   Copyright 2021 Victor Freire. 
+%   Copyright (c) 2022 University of Wisconsin-Madison
 
 %% Setup Problem
 % Discretization

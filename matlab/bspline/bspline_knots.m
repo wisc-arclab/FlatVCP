@@ -1,7 +1,7 @@
 function tau = bspline_knots(tf,N,d)
 %BSPLINE_KNOTS  Clamped and Uniform knot vector for B-splines
 %  tau = BSPLINE_KNOTS(tf,N,d) returns the clamped, uniform knot
-%  vector segmenting the interval [0,tf]. The length of the knot vector is 
+%  vector segmenting the interval [0,tf]. The length of the knot vector is
 %  given by nu = N + d + 1.
 v = N+d+1;
 tau = zeros(v+1,1);

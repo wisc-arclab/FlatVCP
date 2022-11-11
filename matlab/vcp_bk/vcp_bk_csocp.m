@@ -28,7 +28,7 @@ function vcp = vcp_bk_csocp()
 %   Outputs:
 %   - P [1,N+1] control points
 %
-%   Copyright 2021 Victor Freire. 
+%   Copyright (c) 2022 University of Wisconsin-Madison
 
 %% Setup Problem
 % Setup B-spline

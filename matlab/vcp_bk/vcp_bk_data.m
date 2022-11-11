@@ -9,9 +9,8 @@ function data = vcp_bk_data()
 %       - gamma_max [1,1] Maximum steering angle [rad]
 %       - nu [1,1] Weight factor for t_f (high nu -> fast traj)
 %       - L [1,1] Wheelbase length [m]
-%   
 %
-%   Copyright 2021 Victor Freire. 
+%   Copyright (c) 2022 University of Wisconsin-Madison
 
 data.x_0 = [0;0;15;0]; % Initial state
 data.x_f = [100;4;18;0]; % Final state

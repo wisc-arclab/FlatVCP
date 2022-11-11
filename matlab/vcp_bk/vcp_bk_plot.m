@@ -1,12 +1,12 @@
 function [] = vcp_bk_plot(fnum, type, data, col, x, u, t)
-%VCP_BK_PLOT  Plot the trajectory according to the passed type. 
+%VCP_BK_PLOT  Plot the trajectory according to the passed type.
 %   [] = VCP_BK_PLOT(fnum, type, data, col, x, u, t) show in
 %           figure(fnum). Implemented plot types are:
 %               - "path" Plots the path (x,y)
 %               - "state" Plot x(t), y(t), v(t), psi(t) [2,2]
 %               - "input" Plot v_dot(t), psi_dot(t), gamma(t) [3,1]
 %
-%   Copyright 2022 Victor Freire. 
+%   Copyright (c) 2022 University of Wisconsin-Madison
 
 
 switch type

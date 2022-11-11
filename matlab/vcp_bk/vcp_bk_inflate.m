@@ -9,7 +9,7 @@ function [x, u, t] = vcp_bk_inflate(sol, Ts)
 %   see vcp_bk_data() and vcp_bk_solve()
 %
 %
-%   Copyright 2022 Victor Freire. 
+%   Copyright (c) 2022 University of Wisconsin-Madison
 
 %% Matrices to return
 N = max(1,floor(sol.t_f/Ts));
