@@ -89,3 +89,6 @@ You should see the following plots.
   <img src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_state.png" width="400" alt="Bicycle MATLAB Example State">
   <img src="https://github.com/ARC-Lab-Research-Group/FlatVCP/blob/master/img/bk_matlab_example_input.png" width="400" alt="Bicycle MATLAB Example Input">
 </p>
+
+## Acknowledgements
+This work was supported by the University of Wisconsin-Madison and SAE/GM AutoDrive Challenge Series II Competition.
