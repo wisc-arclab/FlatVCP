@@ -1,8 +1,10 @@
 # FlatVCP: Optimal Control for Kinematic Bicycle Model
-This repository contains source code for the paper Optimal Control for Kinematic Bicycle Model with Continuous-time Safety Guarantees: A Sequential Second-order Cone Programming Approach.
+This repository contains source code for the paper [Optimal Control for Kinematic Bicycle
+Model with Continuous-time Safety Guarantees: A Sequential Second-order Cone Programming
+Approach](https://ieeexplore.ieee.org/document/9880490).
 The repository contains both Python3 and MATLAB code.
 
-If you use this code, we would appreciate it if you cited as follows:
+If you use this code, we would appreciate it if you cited the paper as follows:
 ```
 @ARTICLE{freire2022optimal,
   author={Freire, Victor and Xu, Xiangru},
@@ -16,6 +18,8 @@ Sequential Second-Order Cone Programming Approach},
   doi={10.1109/LRA.2022.3204903}
 }
 ```
+
+For more information about our work, please visit [ARC Lab@UW-Madison](https://xu.me.wisc.edu/).
 
 ## Python3
 ### Dependencies & Installation
