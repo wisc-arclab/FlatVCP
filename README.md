@@ -91,4 +91,4 @@ You should see the following plots.
 </p>
 
 ## Acknowledgements
-This work was supported by the University of Wisconsin-Madison and SAE/GM AutoDrive Challenge Series II Competition.
+This work was supported by the University of Wisconsin-Madison and SAE/GM AutoDrive Challenge Series II.
