@@ -25,7 +25,7 @@ function vcp = vcp_bk_bsocp()
 %   - a [N+1,1] a = s_ddot
 %   - b [N+1,1] b = s_dot^2
 %
-%   Copyright (c) 2022 University of Wisconsin-Madison
+%   Copyright (c) 2022, University of Wisconsin-Madison
 
 %% Setup Problem
 % Discretization

@@ -5,7 +5,7 @@ function vcp_bk_compile()
 %          current directory. The file contains a struct with the 3
 %          compiled SOCP programs: A-SOCP, B-SOCP and C-SOCP
 %
-%   Copyright (c) 2022 University of Wisconsin-Madison
+%   Copyright (c) 2022, University of Wisconsin-Madison
 
 yalmip('clear')
 socp.a = vcp_bk_asocp();

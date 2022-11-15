@@ -6,7 +6,7 @@ function [] = vcp_bk_plot(fnum, type, data, col, x, u, t)
 %               - "state" Plot x(t), y(t), v(t), psi(t) [2,2]
 %               - "input" Plot v_dot(t), psi_dot(t), gamma(t) [3,1]
 %
-%   Copyright (c) 2022 University of Wisconsin-Madison
+%   Copyright (c) 2022, University of Wisconsin-Madison
 
 
 switch type

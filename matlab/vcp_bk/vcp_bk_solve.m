@@ -8,7 +8,7 @@ function [sol, err] = vcp_bk_solve(socp,data)
 %
 %   see vcp_bk_data() and vcp_bk_compile()
 %
-%   Copyright (c) 2022 University of Wisconsin-Madison
+%   Copyright (c) 2022, University of Wisconsin-Madison
 
 %% Options
 debug = false; % Switch to true to return extra data in sol struct

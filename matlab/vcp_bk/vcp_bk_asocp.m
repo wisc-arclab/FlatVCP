@@ -25,7 +25,7 @@ function vcp = vcp_bk_asocp()
 %   - ubv_th [1,1] upper bound on \|\theta'(s)\|_2
 %   - uba_th [1,1] upper bound on \|\theta''(s)\|_2
 %
-%   Copyright (c) 2022 University of Wisconsin-Madison
+%   Copyright (c) 2022, University of Wisconsin-Madison
 
 %% Setup Problem
 % Setup B-spline
